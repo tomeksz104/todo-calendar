@@ -1,0 +1,137 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --slate-gray: #dadde6;
+  --yellow: #eab308;
+  --sky: #0ea5e9;
+  --indigo: #8b5cf6;
+  --lime: #84cc16;
+  --dark-grey: darkgrey;
+  --blue: #126ffe;
+}
+
+body {
+  font-family: "Poppins", sans-serif;
+  background-color: #373c4f;
+}
+
+.calendar-container {
+  max-width: 90%;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: #ffffff;
+  padding: 20px;
+}
+
+@media (min-width: 1400px) {
+  .calendar-container {
+    max-width: 1300px;
+  }
+}
+.toolbar-header {
+  display: flex;
+  align-items: center;
+}
+
+.month-navigation {
+  display: flex;
+  margin-left: 15px;
+}
+
+.previous-month,
+.next-month {
+  background-color: #e5effe;
+  border: none;
+  color: var(--blue);
+  font-size: 16px;
+  margin-right: 10px;
+  cursor: pointer;
+}
+.month-navigation button:hover {
+  background-color: #d0e1fb;
+}
+
+.current-month-year {
+  color: #20263e;
+  font-size: 1.75em;
+  font-weight: 500;
+}
+
+table.calendar {
+  table-layout: fixed;
+  width: 100%;
+  margin-top: 20px;
+  border-collapse: collapse;
+  border-radius: 10px;
+  border-style: hidden; /* hide standard table (collapsed) border */
+  box-shadow: 0 0 0 1px var(--slate-gray); /* this draws the table border  */
+}
+
+table.calendar tr > td {
+  border: 1px solid var(--slate-gray);
+  padding: 0.5rem;
+  vertical-align: top;
+}
+
+table.calendar tr {
+  height: 9rem;
+}
+
+.day {
+  display: flex;
+  justify-content: space-between;
+}
+
+.today {
+  background-color: var(--blue);
+  color: #fff;
+}
+
+.monthday {
+  font-weight: 500;
+}
+
+.weekday {
+  color: #8b93ac;
+  font-weight: 500;
+}
+
+.event-list .event {
+  font-size: 12px;
+  border-radius: 15px;
+  padding: 5px 10px 5px 10px;
+  color: #fff;
+}
+
+.not-current {
+  color: #8b93ac;
+}
+
+.circle {
+  display: flex;
+  width: 35px;
+  height: 35px;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+}
+
+.yellow {
+  background-color: var(--yellow);
+}
+
+.sky {
+  background-color: var(--sky);
+}
+
+.indigo {
+  background-color: var(--indigo);
+}
+
+.lime {
+  background-color: var(--lime);
+}
