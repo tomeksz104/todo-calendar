@@ -1,7 +1,7 @@
 * {
   box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+  margin: 0px;
+  padding: 0px;
 }
 
 :root {
@@ -16,14 +16,14 @@
 
 body {
   font-family: "Poppins", sans-serif;
-  background-color: #373c4f;
+  background-color: rgb(55, 60, 79);
 }
 
 .calendar-container {
   max-width: 90%;
   margin-left: auto;
   margin-right: auto;
-  background-color: #ffffff;
+  background-color: rgb(255, 255, 255);
   padding: 20px;
 }
 
@@ -37,78 +37,92 @@ body {
   align-items: center;
 }
 
+.current-date {
+  color: rgb(32, 38, 62);
+  font-size: 1.75em;
+  font-weight: 500;
+}
+
+.today-button {
+  color: rgb(60, 64, 67);
+  background-color: white;
+  font-size: 15px;
+  margin-left: 10px;
+  cursor: pointer;
+  border-width: 1px;
+  border-style: solid;
+  border-color: rgb(218, 220, 224);
+  border-image: initial;
+  padding: 8px 15px;
+  border-radius: 5px;
+}
+
+.today-button:hover {
+  background-color: rgb(249, 249, 249);
+}
+
 .month-navigation {
   display: flex;
   margin-left: 15px;
 }
 
+.month-navigation button:hover {
+  background-color: rgb(208, 225, 251);
+}
+
 .previous-month,
 .next-month {
-  background-color: #e5effe;
-  border: none;
+  background-color: rgb(229, 239, 254);
   color: var(--blue);
   font-size: 16px;
   margin-right: 10px;
   cursor: pointer;
-}
-.month-navigation button:hover {
-  background-color: #d0e1fb;
-}
-
-.current-month-year {
-  color: #20263e;
-  font-size: 1.75em;
-  font-weight: 500;
+  border-width: initial;
+  border-style: none;
+  border-color: initial;
+  border-image: initial;
 }
 
-table.calendar {
-  table-layout: fixed;
-  width: 100%;
+.calendar-body {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: repeat(5, 1fr);
+  background-color: var(--slate-gray);
   margin-top: 20px;
-  border-collapse: collapse;
-  border-radius: 10px;
-  border-style: hidden; /* hide standard table (collapsed) border */
-  box-shadow: 0 0 0 1px var(--slate-gray); /* this draws the table border  */
-}
-
-table.calendar tr > td {
+  grid-column-gap: 1px;
+  grid-row-gap: 1px;
   border: 1px solid var(--slate-gray);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.calendar-body .cell {
+  height: 8rem;
+  background-color: white;
+  cursor: pointer;
   padding: 0.5rem;
-  vertical-align: top;
 }
 
-table.calendar tr {
-  height: 9rem;
+.calendar-body .cell:hover {
+  background-color: rgb(242, 242, 255);
 }
 
-.day {
+.calendar-body .day {
   display: flex;
   justify-content: space-between;
-}
-
-.today {
-  background-color: var(--blue);
-  color: #fff;
 }
 
 .monthday {
   font-weight: 500;
 }
 
-.weekday {
-  color: #8b93ac;
-  font-weight: 500;
-}
-
-.event-list .event {
-  font-size: 12px;
-  border-radius: 15px;
-  padding: 5px 10px 5px 10px;
-  color: #fff;
-}
-
 .not-current {
-  color: #8b93ac;
+  color: rgb(139, 147, 172);
+}
+
+.weekday {
+  color: rgb(139, 147, 172);
+  font-weight: 500;
 }
 
 .circle {
@@ -118,6 +132,154 @@ table.calendar tr {
   justify-content: center;
   align-items: center;
   border-radius: 50%;
+}
+
+.today {
+  background-color: var(--blue);
+  color: rgb(255, 255, 255);
+  animation: pulse 0.4s ease;
+}
+
+.event-list .event {
+  font-size: 12px;
+  border-radius: 15px;
+  padding: 5px 10px 5px 10px;
+  color: #fff;
+}
+
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  z-index: 10;
+  background-color: white;
+  width: 500px;
+  max-width: 80%;
+  transition: all 200ms ease-in-out 0s;
+  border-radius: 0.5rem;
+}
+
+.modal.active {
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 15px;
+  border-bottom: 1px solid rgb(229, 231, 235);
+}
+
+.modal-header .title {
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+
+.modal-header .close-button svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.modal-header .close-button {
+  cursor: pointer;
+  color: rgb(156, 163, 175);
+  border-width: initial;
+  border-style: none;
+  border-color: initial;
+  border-image: initial;
+  outline: none;
+  background: none;
+  padding: 0.375rem;
+  border-radius: 0.5rem;
+}
+
+.modal-header .close-button:hover {
+  color: rgb(17, 24, 39);
+  background-color: rgb(229, 231, 235);
+}
+
+.modal-body {
+  padding: 10px 15px;
+}
+
+.modal input {
+  width: 100%;
+  height: 40px;
+  border-top-width: initial;
+  border-right-width: initial;
+  border-left-width: initial;
+  border-top-color: initial;
+  border-right-color: initial;
+  border-left-color: initial;
+  font-size: 1rem;
+  font-weight: 400;
+  color: rgb(55, 60, 79);
+  outline: none;
+  border-style: none none solid;
+  border-image: initial;
+  border-bottom: 1px solid rgb(245, 245, 245);
+  padding: 0px 10px;
+}
+
+.modal input:focus {
+  border-bottom: 1px solid rgb(26, 115, 232);
+}
+
+.modal-footer {
+  display: flex;
+  padding: 10px 15px;
+  border-top: 1px solid rgb(229, 231, 235);
+}
+
+.modal-footer button {
+  cursor: pointer;
+  padding: 0.625rem 1.25rem;
+  border-radius: 0.5rem;
+}
+
+.button-save {
+  background-color: rgb(26, 86, 219);
+  color: rgb(255, 255, 255);
+  border-width: initial;
+  border-style: none;
+  border-color: initial;
+  border-image: initial;
+}
+
+.button-save:hover {
+  background-color: rgb(30, 66, 159);
+}
+
+.button-cancel {
+  margin-left: 10px;
+  background-color: rgb(255, 255, 255);
+  border-width: 1px;
+  border-style: solid;
+  border-color: rgb(229, 231, 235);
+  border-image: initial;
+}
+
+.button-cancel:hover {
+  background-color: rgb(243, 244, 246);
+}
+
+#overlay {
+  position: fixed;
+  opacity: 0;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  background-color: rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+  transition: all 200ms ease-in-out 0s;
+}
+
+#overlay.active {
+  opacity: 1;
+  pointer-events: all;
 }
 
 .yellow {
@@ -134,4 +296,34 @@ table.calendar tr {
 
 .lime {
   background-color: var(--lime);
+}
+
+@-webkit-keyframes pulse {
+  from {
+    -webkit-transform: scale(0);
+    transform: scale(0);
+  }
+  85% {
+    -webkit-transform: scale(1.25);
+    transform: scale(1.25);
+  }
+  to {
+    -webkit-transform: scale(1);
+    transform: scale(1);
+  }
+}
+
+@keyframes pulse {
+  from {
+    -webkit-transform: scale(0);
+    transform: scale(0);
+  }
+  85% {
+    -webkit-transform: scale(1.25);
+    transform: scale(1.25);
+  }
+  to {
+    -webkit-transform: scale(1);
+    transform: scale(1);
+  }
 }
