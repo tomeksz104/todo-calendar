@@ -11,42 +11,21 @@ let firstDayofMonth,
   previousMonthBtn,
   nextMonthBtn,
   modal,
+  modalTitle,
   modalDate,
-  saveTaskBtn,
+  modalBody,
+  menageTaskDiv,
+  modalTaskList,
+  colors,
+  taskInput,
+  addTaskBtn,
+  editTaskBtn,
+  deleteTaskBtn,
   closeModalBtn,
   cancelModalBtn,
   overlay;
 
 const tasks = [];
-
-const eventsArr = [
-  {
-    date: "18.02.2023",
-    events: [
-      {
-        title: "Event 1 lorem ipsun dolar sit genfa tersd dsad ",
-        time: "10:00 AM",
-      },
-      {
-        title: "Event 2",
-        time: "11:00 AM",
-      },
-    ],
-  },
-  {
-    date: new Date().toLocaleDateString(),
-    events: [
-      {
-        title: "Event 1 lorem ipsun dolar sit genfa tersd dsad ",
-        time: "10:00 AM",
-      },
-      {
-        title: "Event 2",
-        time: "11:00 AM",
-      },
-    ],
-  },
-];
 
 const months = [
   "January",
@@ -82,12 +61,19 @@ const prepareDOMElements = () => {
   nextMonthBtn = document.querySelector("button.next-month");
 
   modal = document.querySelector(".modal");
+  modalTitle = document.querySelector(".modal-header .title");
   modalDate = document.querySelector(".modal-date");
+  modalBody = document.querySelector(".modal .modal-body");
+  menageTaskDiv = document.querySelector(".modal-body .menage-task");
+  modalTaskList = document.querySelector(".modal-body .task-list");
   closeModalBtn = document.querySelector("[data-close-button]");
-  saveTaskBtn = document.querySelector(".button-save");
+  colors = document.querySelectorAll(".select-color");
+  taskInput = document.querySelector("input.task-title");
+  addTaskBtn = document.querySelector(".button-add");
+  editTaskBtn = document.querySelector(".button-save");
   cancelModalBtn = document.querySelector(".button-cancel");
+  deleteTaskBtn = document.querySelector(".button-delete");
   overlay = document.getElementById("overlay");
-  taskInput = document.querySelector("input.task-name");
 };
 
 const prepareDOMEvents = () => {
@@ -95,7 +81,13 @@ const prepareDOMEvents = () => {
   previousMonthBtn.addEventListener("click", previousMonth);
   nextMonthBtn.addEventListener("click", nextMonth);
 
-  saveTaskBtn.addEventListener("click", addTask);
+  colors.forEach((color) => {
+    color.addEventListener("click", selectColor);
+  });
+  taskInput.addEventListener("keyup", enterKeyCheck);
+  addTaskBtn.addEventListener("click", addTask);
+  editTaskBtn.addEventListener("click", editTask);
+  deleteTaskBtn.addEventListener("click", deleteTask);
   closeModalBtn.addEventListener("click", closeModal);
   cancelModalBtn.addEventListener("click", closeModal);
   overlay.addEventListener("click", closeModal);
@@ -187,18 +179,25 @@ const renderCalendar = () => {
     }
 
     const taskList = document.createElement("div");
-    taskList.classList.add("event-list");
+    taskList.classList.add("task-list");
 
     tasks.forEach((task) => {
       if (task.date === el.date.toLocaleDateString()) {
         task.tasks.forEach((task) => {
           const newTask = document.createElement("div");
-          newTask.classList.add("event");
-          newTask.classList.add("yellow");
+          newTask.dataset.id = task.id;
+          newTask.classList.add("task");
+          newTask.classList.add(task.color);
           newTask.textContent = task.title;
 
           taskList.append(newTask);
         });
+        if (task.tasks.length > 2) {
+          const moreTasks = document.createElement("div");
+          moreTasks.classList.add("more-tasks");
+          moreTasks.textContent = `+${task.tasks.length - 2} more`;
+          taskList.append(moreTasks);
+        }
       }
     });
 
@@ -222,8 +221,12 @@ const addTask = () => {
   if (taskInput.value.trim() !== "") {
     const date = new Date(modalDate.getAttribute("data-date")).toLocaleDateString();
 
+    const color = document.querySelector(".colors .active");
+
     const newTask = {
+      id: new Date().getTime(),
       title: taskInput.value,
+      color: color.firstChild.classList[1],
     };
 
     let taskAdded = false;
@@ -241,15 +244,78 @@ const addTask = () => {
       });
     }
 
-    taskInput.value = "";
     renderCalendar();
     closeModal();
   }
 };
+const editTask = () => {
+  const dataId = parseInt(taskInput.dataset.id);
+
+  const color = document.querySelector(".colors .active");
+
+  tasks.forEach((task) => {
+    if (task.date === new Date(modalDate.getAttribute("data-date")).toLocaleDateString()) {
+      task.tasks.forEach((task) => {
+        if (task.id === dataId) {
+          task.title = taskInput.value;
+          task.color = color.firstChild.classList[1];
+        }
+      });
+    }
+  });
+
+  renderCalendar();
+  closeModal();
+};
+
+const deleteTask = () => {
+  const dataId = parseInt(taskInput.dataset.id);
+
+  tasks.forEach((task) => {
+    if (task.date === new Date(modalDate.getAttribute("data-date")).toLocaleDateString()) {
+      task.tasks.forEach((item, index) => {
+        if (item.id === dataId) {
+          task.tasks.splice(index, 1);
+        }
+      });
+      //if no events left in a day then remove that day from tasks array
+      if (task.tasks.length === 0) {
+        tasks.splice(tasks.indexOf(task), 1);
+      }
+    }
+  });
+
+  renderCalendar();
+  closeModal();
+};
+
+const checkClick = (e) => {
+  if (e.target.matches(".day") || e.target.matches(".cell")) {
+    openModal(e);
+  } else if (e.target.matches(".task")) {
+    colors.forEach((color) => {
+      if (color.firstChild.classList[1] === e.target.classList[1]) {
+        color.classList.add("active");
+      } else {
+        color.classList.remove("active");
+      }
+    });
+    openModal(e, true);
+  } else if (e.target.matches(".more-tasks")) {
+    openMoreTaskModal(e);
+  }
+};
+
+const selectColor = (e) => {
+  colors.forEach((color) => {
+    color.classList.remove("active");
+  });
+  e.currentTarget.classList.add("active");
+};
 
 const refreshDaysEventListeners = () => {
   Array.prototype.forEach.call(days, function (day) {
-    day.addEventListener("click", openModal);
+    day.addEventListener("click", checkClick);
   });
 };
 
@@ -279,19 +345,95 @@ const nextMonth = () => {
   renderCalendar();
 };
 
-const openModal = (e) => {
+const openModal = (e, edit = false) => {
+  modalTaskList.innerHTML = "";
+  menageTaskDiv.classList.remove("hide");
+  if (edit) {
+    modalTitle.textContent = "Edit task";
+
+    taskInput.value = e.target.textContent;
+    taskInput.dataset.id = e.target.dataset.id;
+
+    addTaskBtn.classList.add("hide");
+    editTaskBtn.classList.remove("hide");
+    deleteTaskBtn.classList.remove("hide");
+    cancelModalBtn.classList.remove("hide");
+  } else {
+    modalTitle.textContent = "Add task";
+
+    addTaskBtn.classList.remove("hide");
+    editTaskBtn.classList.add("hide");
+    deleteTaskBtn.classList.add("hide");
+    cancelModalBtn.classList.remove("hide");
+
+    taskInput.removeAttribute("data-id");
+  }
+
+  if (!e.target.hasAttribute("data-id")) {
+    const date = new Date(e.currentTarget.children[0].firstChild.getAttribute("data-date"));
+
+    modalDate.textContent = date.toLocaleDateString();
+    modalDate.dataset.date = date;
+  }
+
+  modal.classList.add("active");
+  overlay.classList.add("active");
+};
+
+const openMoreTaskModal = (e) => {
   const date = new Date(e.currentTarget.children[0].firstChild.getAttribute("data-date"));
+
+  modalTitle.textContent = "Task List";
+  modalDate.textContent = date.toLocaleDateString();
+  modalDate.dataset.date = date;
+
+  menageTaskDiv.classList.add("hide");
+  addTaskBtn.classList.add("hide");
+  editTaskBtn.classList.add("hide");
+  deleteTaskBtn.classList.add("hide");
 
   modal.classList.add("active");
   overlay.classList.add("active");
 
-  modalDate.textContent = date.toLocaleDateString();
-  modalDate.dataset.date = date;
+  modalTaskList.innerHTML = "";
+
+  tasks.forEach((task) => {
+    if (task.date === date.toLocaleDateString()) {
+      task.tasks.forEach((task) => {
+        const newTask = document.createElement("div");
+        newTask.dataset.id = task.id;
+        newTask.classList.add("task");
+        newTask.classList.add(task.color);
+        newTask.textContent = task.title;
+
+        modalTaskList.append(newTask);
+      });
+    }
+  });
+  modalBody.append(modalTaskList);
+
+  const taskListListener = document.querySelectorAll(".modal-body .task");
+
+  taskListListener.forEach((task) => {
+    task.addEventListener("click", checkClick);
+  });
 };
 
 const closeModal = () => {
+  taskInput.value = "";
+
   modal.classList.remove("active");
   overlay.classList.remove("active");
+};
+
+const enterKeyCheck = (e) => {
+  if (e.key === "Enter") {
+    if (taskInput.hasAttribute("data-id")) {
+      editTask();
+    } else {
+      addTask();
+    }
+  }
 };
 
 document.addEventListener("DOMContentLoaded", main);

@@ -56,11 +56,26 @@
         </button>
       </div>
       <div class="modal-body">
-        <input type="text" placeholder="Task Name" class="task-name" />
+        <div class="menage-task">
+          <div class="colors">
+            <div class="select-color active"><div class="item sky"></div></div>
+            <div class="select-color"><div class="item yellow"></div></div>
+            <div class="select-color"><div class="item indigo"></div></div>
+            <div class="select-color"><div class="item lime"></div></div>
+          </div>
+          <input type="text" placeholder="Task title" class="task-title" />
+        </div>
+        <div class="task-list"></div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="button-save">Save</button>
-        <button type="button" class="button-cancel">Cancel</button>
+        <div>
+          <button type="button" class="button-save">Save</button>
+          <button type="button" class="button-add">Add</button>
+          <button type="button" class="button-cancel">Cancel</button>
+        </div>
+        <div>
+          <button type="button" class="button-delete">Delete</button>
+        </div>
       </div>
     </div>
     <div id="overlay" class=""></div>
