@@ -35,6 +35,12 @@ body {
 .toolbar-header {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+}
+
+.toolbar-header div {
+  display: flex;
+  align-items: center;
 }
 
 .current-date {
@@ -59,6 +65,23 @@ body {
 
 .today-button:hover {
   background-color: rgb(249, 249, 249);
+}
+
+.holidays-button {
+  color: #ffffff;
+  background-image: linear-gradient(340deg, #045de9 0%, #09c6f9 100%);
+  font-size: 15px;
+  margin-left: 10px;
+  cursor: pointer;
+  border-width: 1px;
+  border-style: solid;
+  border-color: rgb(218, 220, 224);
+  border-image: initial;
+  padding: 8px 15px;
+  border-radius: 5px;
+}
+
+.holidays-button:hover {
 }
 
 .month-navigation {
@@ -101,6 +124,7 @@ body {
   background-color: white;
   cursor: pointer;
   padding: 0.5rem;
+  overflow: auto;
 }
 
 .calendar-body .cell:hover {
@@ -335,6 +359,33 @@ body {
   pointer-events: all;
 }
 
+.toggle {
+  position: relative;
+  height: 30px;
+  width: 55px;
+  border-radius: 100px;
+  background-color: #fff;
+  border: 1px solid rgb(218, 220, 224);
+  cursor: pointer;
+  margin-left: 15px;
+}
+.toggle::before {
+  content: "";
+  position: absolute;
+  height: 25px;
+  width: 25px;
+  background: #000000;
+  border-radius: 50%;
+  top: 50%;
+  left: 3px;
+  transform: translateY(-50%);
+  transition: all 0.3s ease-in-out;
+}
+.toggle.active::before {
+  background-color: rgba(73, 168, 68);
+  left: calc(100% - 25px - 3px);
+}
+
 .yellow {
   background-color: var(--yellow);
 }
@@ -383,4 +434,26 @@ body {
     -webkit-transform: scale(1);
     transform: scale(1);
   }
+}
+
+/* ===== Scrollbar CSS ===== */
+/* Firefox */
+.calendar-container * {
+  scrollbar-width: auto;
+  scrollbar-color: #1a73e8 #ffffff;
+}
+
+/* Chrome, Edge, and Safari */
+.calendar-container *::-webkit-scrollbar {
+  width: 16px;
+}
+
+.calendar-container *::-webkit-scrollbar-track {
+  background: #ffffff;
+}
+
+.calendar-container *::-webkit-scrollbar-thumb {
+  background-color: #1a73e8;
+  border-radius: 10px;
+  border: 3px solid #ffffff;
 }

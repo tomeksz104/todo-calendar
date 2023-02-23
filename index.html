@@ -19,18 +19,24 @@
   <body>
     <div class="calendar-container">
       <div class="toolbar-header">
-        <button type="button" class="today-button">Today</button>
-        <div class="month-navigation">
-          <button type="button" class="circle previous-month">
-            <i class="fa-solid fa-chevron-left"></i>
-          </button>
-          <button type="button" class="circle next-month">
-            <i class="fa-solid fa-chevron-right"></i>
-          </button>
+        <div>
+          <button type="button" class="today-button">Today</button>
+          <div class="month-navigation">
+            <button type="button" class="circle previous-month">
+              <i class="fa-solid fa-chevron-left"></i>
+            </button>
+            <button type="button" class="circle next-month">
+              <i class="fa-solid fa-chevron-right"></i>
+            </button>
+          </div>
+          <div class="current-date">
+            <span class="month"></span>&nbsp;
+            <span class="year"></span>
+          </div>
         </div>
-        <div class="current-date">
-          <span class="month"></span>
-          <span class="year"></span>
+        <div>
+          <span>Show holidays</span>
+          <div class="toggle"></div>
         </div>
       </div>
       <div class="calendar-body"></div>

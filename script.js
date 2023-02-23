@@ -23,9 +23,22 @@ let firstDayofMonth,
   deleteTaskBtn,
   closeModalBtn,
   cancelModalBtn,
-  overlay;
+  overlay,
+  toggleHolidays,
+  holidaysBtn;
 
 const tasks = [];
+
+let holidays = false;
+let fetchedHolidays = false;
+const holidaysArr = [];
+
+const BASE_CALENDAR_URL = "https://www.googleapis.com/calendar/v3/calendars";
+const BASE_CALENDAR_ID_FOR_PUBLIC_HOLIDAY = "holiday@group.v.calendar.google.com";
+const API_KEY = "YOUR_API_KEY";
+const CALENDAR_REGION = "pl.polish";
+
+const url = `${BASE_CALENDAR_URL}/${CALENDAR_REGION}%23${BASE_CALENDAR_ID_FOR_PUBLIC_HOLIDAY}/events?key=${API_KEY}`;
 
 const months = [
   "January",
@@ -74,6 +87,9 @@ const prepareDOMElements = () => {
   cancelModalBtn = document.querySelector(".button-cancel");
   deleteTaskBtn = document.querySelector(".button-delete");
   overlay = document.getElementById("overlay");
+  //holidaysBtn = document.querySelector(".holidays-button");
+
+  toggleHolidays = document.querySelector(".toggle");
 };
 
 const prepareDOMEvents = () => {
@@ -91,6 +107,8 @@ const prepareDOMEvents = () => {
   closeModalBtn.addEventListener("click", closeModal);
   cancelModalBtn.addEventListener("click", closeModal);
   overlay.addEventListener("click", closeModal);
+  //holidaysBtn.addEventListener("click", getHolidays);
+  toggleHolidays.addEventListener("click", showHolidays);
 };
 
 const getPreviousMonthDays = (date) => {
@@ -184,14 +202,17 @@ const renderCalendar = () => {
     tasks.forEach((task) => {
       if (task.date === el.date.toLocaleDateString()) {
         task.tasks.forEach((task) => {
-          const newTask = document.createElement("div");
-          newTask.dataset.id = task.id;
-          newTask.classList.add("task");
-          newTask.classList.add(task.color);
-          newTask.textContent = task.title;
+          if (!task.holiday || (task.holiday === true && holidays === true)) {
+            const newTask = document.createElement("div");
+            newTask.dataset.id = task.id;
+            newTask.classList.add("task");
+            newTask.classList.add(task.color);
+            newTask.textContent = task.title;
 
-          taskList.append(newTask);
+            taskList.append(newTask);
+          }
         });
+
         if (task.tasks.length > 2) {
           const moreTasks = document.createElement("div");
           moreTasks.classList.add("more-tasks");
@@ -303,6 +324,57 @@ const checkClick = (e) => {
     openModal(e, true);
   } else if (e.target.matches(".more-tasks")) {
     openMoreTaskModal(e);
+  }
+};
+
+async function getHolidays() {
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+    holidays = true;
+    holidaysArr.push(...data.items);
+
+    holidaysArr.forEach((holiday) => {
+      const holidayDate = new Date(holiday.start.date);
+      const newTask = {
+        id: new Date().getTime(),
+        title: holiday.summary,
+        color: "sky",
+        holiday: true,
+      };
+
+      let taskAdded = false;
+      tasks.forEach((element) => {
+        const taskDate = new Date(element.date);
+        if (taskDate.toLocaleDateString() === holidayDate.toLocaleDateString()) {
+          element.tasks.push(newTask);
+          taskAdded = true;
+        }
+      });
+
+      if (!taskAdded) {
+        tasks.push({
+          date: holidayDate.toLocaleDateString(),
+          tasks: [newTask],
+        });
+      }
+    });
+
+    fetchedHolidays = true;
+
+    renderCalendar();
+  } catch {
+    console.error("Failed to retrieve data from google api");
+  }
+}
+
+const showHolidays = () => {
+  toggleHolidays.classList.toggle("active");
+  holidays = !holidays;
+  if (fetchedHolidays === false) {
+    getHolidays();
+  } else {
+    renderCalendar();
   }
 };
 
