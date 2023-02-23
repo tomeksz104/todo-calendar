@@ -20,18 +20,12 @@ body {
 }
 
 .calendar-container {
-  max-width: 90%;
   margin-left: auto;
   margin-right: auto;
   background-color: rgb(255, 255, 255);
   padding: 20px;
 }
 
-@media (min-width: 1400px) {
-  .calendar-container {
-    max-width: 1300px;
-  }
-}
 .toolbar-header {
   display: flex;
   align-items: center;
@@ -288,6 +282,11 @@ body {
   border-bottom: 1px solid rgb(26, 115, 232);
 }
 
+.modal .error {
+  color: rgb(203 77 77);
+  margin-top: 10px;
+}
+
 .modal-footer {
   display: flex;
   justify-content: space-between;
@@ -340,6 +339,19 @@ body {
 
 .button-delete:hover {
   background-color: rgb(155 28 28);
+}
+
+.alert-danger {
+  background-color: rgb(253 242 242);
+  color: rgb(155 28 28);
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-top: 10px;
+}
+.alert-danger .title {
+  font-weight: 500;
 }
 
 #overlay {
@@ -456,4 +468,36 @@ body {
   background-color: #1a73e8;
   border-radius: 10px;
   border: 3px solid #ffffff;
+}
+
+@media only screen and (min-width: 1400px) {
+  .calendar-container {
+    max-width: 1300px;
+  }
+}
+
+@media (max-width: 600px) {
+  body {
+    font-size: 12px;
+  }
+  .circle {
+    width: 25px;
+    height: 25px;
+  }
+  .today-button,
+  .previous-month,
+  .next-month {
+    font-size: 12px;
+  }
+  .current-date {
+    font-size: 1.5em;
+  }
+  .toggle {
+    margin-left: 0px;
+    transform: scale(0.6);
+  }
+  .task-list .task {
+    padding: 0px 5px 0px 5px;
+    font-size: 10px;
+  }
 }

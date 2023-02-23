@@ -25,7 +25,9 @@ let firstDayofMonth,
   cancelModalBtn,
   overlay,
   toggleHolidays,
-  holidaysBtn;
+  holidaysBtn,
+  alertDanger,
+  errorModal;
 
 const tasks = [];
 
@@ -35,7 +37,7 @@ const holidaysArr = [];
 
 const BASE_CALENDAR_URL = "https://www.googleapis.com/calendar/v3/calendars";
 const BASE_CALENDAR_ID_FOR_PUBLIC_HOLIDAY = "holiday@group.v.calendar.google.com";
-const API_KEY = "YOUR_API_KEY";
+const API_KEY = "AIzaSyCfa6Z2rd53maV9Sk1AReVUuRWO7yM9fqA";
 const CALENDAR_REGION = "pl.polish";
 
 const url = `${BASE_CALENDAR_URL}/${CALENDAR_REGION}%23${BASE_CALENDAR_ID_FOR_PUBLIC_HOLIDAY}/events?key=${API_KEY}`;
@@ -80,6 +82,7 @@ const prepareDOMElements = () => {
   menageTaskDiv = document.querySelector(".modal-body .menage-task");
   modalTaskList = document.querySelector(".modal-body .task-list");
   closeModalBtn = document.querySelector("[data-close-button]");
+  errorModal = document.querySelector(".modal .error");
   colors = document.querySelectorAll(".select-color");
   taskInput = document.querySelector("input.task-title");
   addTaskBtn = document.querySelector(".button-add");
@@ -87,7 +90,7 @@ const prepareDOMElements = () => {
   cancelModalBtn = document.querySelector(".button-cancel");
   deleteTaskBtn = document.querySelector(".button-delete");
   overlay = document.getElementById("overlay");
-  //holidaysBtn = document.querySelector(".holidays-button");
+  alertDanger = document.querySelector(".alert-danger");
 
   toggleHolidays = document.querySelector(".toggle");
 };
@@ -267,6 +270,9 @@ const addTask = () => {
 
     renderCalendar();
     closeModal();
+  } else {
+    errorModal.innerText = "Error. The task title cannot be empty";
+    errorModal.classList.remove("hide");
   }
 };
 const editTask = () => {
@@ -331,7 +337,6 @@ async function getHolidays() {
   try {
     const res = await fetch(url);
     const data = await res.json();
-    holidays = true;
     holidaysArr.push(...data.items);
 
     holidaysArr.forEach((holiday) => {
@@ -361,19 +366,23 @@ async function getHolidays() {
     });
 
     fetchedHolidays = true;
+    toggleHolidays.classList.toggle("active");
+    holidays = !holidays;
 
     renderCalendar();
   } catch {
+    alertDanger.classList.remove("hide");
+    alertDanger.innerHTML = `<span class="title">Alert!</span> Failed to retrieve data from google api. Check that you have entered the correct API_KEY.`;
     console.error("Failed to retrieve data from google api");
   }
 }
 
 const showHolidays = () => {
-  toggleHolidays.classList.toggle("active");
-  holidays = !holidays;
   if (fetchedHolidays === false) {
     getHolidays();
   } else {
+    toggleHolidays.classList.toggle("active");
+    holidays = !holidays;
     renderCalendar();
   }
 };
@@ -493,6 +502,7 @@ const openMoreTaskModal = (e) => {
 
 const closeModal = () => {
   taskInput.value = "";
+  errorModal.classList.add("hide");
 
   modal.classList.remove("active");
   overlay.classList.remove("active");
