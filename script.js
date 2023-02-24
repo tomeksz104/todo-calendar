@@ -37,7 +37,7 @@ const holidaysArr = [];
 
 const BASE_CALENDAR_URL = "https://www.googleapis.com/calendar/v3/calendars";
 const BASE_CALENDAR_ID_FOR_PUBLIC_HOLIDAY = "holiday@group.v.calendar.google.com";
-const API_KEY = "AIzaSyCfa6Z2rd53maV9Sk1AReVUuRWO7yM9fqA";
+const API_KEY = "";
 const CALENDAR_REGION = "pl.polish";
 
 const url = `${BASE_CALENDAR_URL}/${CALENDAR_REGION}%23${BASE_CALENDAR_ID_FOR_PUBLIC_HOLIDAY}/events?key=${API_KEY}`;
