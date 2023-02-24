@@ -60,6 +60,7 @@ const months = [
 const weekDay = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 const main = () => {
+  prepareLocalStorage();
   prepareDOMElements();
   renderCalendar();
   prepareDOMEvents();
@@ -110,8 +111,15 @@ const prepareDOMEvents = () => {
   closeModalBtn.addEventListener("click", closeModal);
   cancelModalBtn.addEventListener("click", closeModal);
   overlay.addEventListener("click", closeModal);
-  //holidaysBtn.addEventListener("click", getHolidays);
   toggleHolidays.addEventListener("click", showHolidays);
+};
+
+const prepareLocalStorage = () => {
+  if (localStorage.getItem("tasks") !== null) {
+    let tasksStorage = window.localStorage.getItem("tasks");
+    tasks.splice(0, tasks.length);
+    tasks.push(...JSON.parse(tasksStorage));
+  }
 };
 
 const getPreviousMonthDays = (date) => {
@@ -270,6 +278,7 @@ const addTask = () => {
 
     renderCalendar();
     closeModal();
+    reloadLocalStorage();
   } else {
     errorModal.innerText = "Error. The task title cannot be empty";
     errorModal.classList.remove("hide");
@@ -293,6 +302,7 @@ const editTask = () => {
 
   renderCalendar();
   closeModal();
+  reloadLocalStorage();
 };
 
 const deleteTask = () => {
@@ -314,6 +324,7 @@ const deleteTask = () => {
 
   renderCalendar();
   closeModal();
+  reloadLocalStorage();
 };
 
 const checkClick = (e) => {
@@ -450,7 +461,7 @@ const openModal = (e, edit = false) => {
     taskInput.removeAttribute("data-id");
   }
 
-  if (!e.target.hasAttribute("data-id")) {
+  if (e.currentTarget.children[0]) {
     const date = new Date(e.currentTarget.children[0].firstChild.getAttribute("data-date"));
 
     modalDate.textContent = date.toLocaleDateString();
@@ -506,6 +517,11 @@ const closeModal = () => {
 
   modal.classList.remove("active");
   overlay.classList.remove("active");
+};
+
+const reloadLocalStorage = () => {
+  window.localStorage.clear("tasks");
+  window.localStorage.setItem("tasks", JSON.stringify(tasks));
 };
 
 const enterKeyCheck = (e) => {
