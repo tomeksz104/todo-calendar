@@ -29,7 +29,7 @@ let firstDayofMonth,
   alertDanger,
   errorModal;
 
-const tasks = [];
+let tasks = [];
 
 let holidays = false;
 let fetchedHolidays = false;
@@ -37,7 +37,7 @@ const holidaysArr = [];
 
 const BASE_CALENDAR_URL = "https://www.googleapis.com/calendar/v3/calendars";
 const BASE_CALENDAR_ID_FOR_PUBLIC_HOLIDAY = "holiday@group.v.calendar.google.com";
-const API_KEY = "";
+const API_KEY = "AIzaSyCfa6Z2rd53maV9Sk1AReVUuRWO7yM9fqA";
 const CALENDAR_REGION = "pl.polish";
 
 const url = `${BASE_CALENDAR_URL}/${CALENDAR_REGION}%23${BASE_CALENDAR_ID_FOR_PUBLIC_HOLIDAY}/events?key=${API_KEY}`;
@@ -115,9 +115,9 @@ const prepareDOMEvents = () => {
 };
 
 const prepareLocalStorage = () => {
-  if (localStorage.getItem("tasks") !== null) {
-    let tasksStorage = window.localStorage.getItem("tasks");
-    tasks.splice(0, tasks.length);
+  if (window.localStorage.getItem("tasks") !== null) {
+    const tasksStorage = window.localStorage.getItem("tasks");
+    tasks = [];
     tasks.push(...JSON.parse(tasksStorage));
   }
 };
@@ -212,6 +212,7 @@ const renderCalendar = () => {
 
     tasks.forEach((task) => {
       if (task.date === el.date.toLocaleDateString()) {
+        let countHolidays = 0;
         task.tasks.forEach((task) => {
           if (!task.holiday || (task.holiday === true && holidays === true)) {
             const newTask = document.createElement("div");
@@ -222,12 +223,23 @@ const renderCalendar = () => {
 
             taskList.append(newTask);
           }
+          if (task.holiday === true) {
+            countHolidays++;
+          }
         });
 
-        if (task.tasks.length > 2) {
+        if (
+          (holidays === true && task.tasks.length > 2) ||
+          (holidays === false && task.tasks.length - countHolidays > 2)
+        ) {
           const moreTasks = document.createElement("div");
           moreTasks.classList.add("more-tasks");
-          moreTasks.textContent = `+${task.tasks.length - 2} more`;
+
+          moreTasks.textContent =
+            holidays === true
+              ? `+${task.tasks.length - 2} more`
+              : `+${task.tasks.length - countHolidays - 2} more`;
+
           taskList.append(moreTasks);
         }
       }
@@ -351,8 +363,8 @@ async function getHolidays() {
     holidaysArr.push(...data.items);
 
     holidaysArr.forEach((holiday) => {
-      const holidayDate = new Date(holiday.start.date);
-      const newTask = {
+      let holidayDate = new Date(holiday.start.date);
+      let newTask = {
         id: new Date().getTime(),
         title: holiday.summary,
         color: "sky",
@@ -361,9 +373,11 @@ async function getHolidays() {
 
       let taskAdded = false;
       tasks.forEach((element) => {
-        const taskDate = new Date(element.date);
-        if (taskDate.toLocaleDateString() === holidayDate.toLocaleDateString()) {
-          element.tasks.push(newTask);
+        if (element.date === holidayDate.toLocaleDateString()) {
+          let holidayExists = element.tasks.find((el) => el.title == newTask.title);
+          if (!holidayExists) {
+            element.tasks.push(newTask);
+          }
           taskAdded = true;
         }
       });
@@ -382,8 +396,8 @@ async function getHolidays() {
 
     renderCalendar();
   } catch {
-    alertDanger.classList.remove("hide");
-    alertDanger.innerHTML = `<span class="title">Alert!</span> Failed to retrieve data from google api. Check that you have entered the correct API_KEY.`;
+    alertDanger.classList.add("active");
+    alertDanger.innerHTML = `<span class="title">Error!</span> Failed to retrieve data from google api. Check that you have entered the correct API_KEY.`;
     console.error("Failed to retrieve data from google api");
   }
 }
@@ -492,13 +506,15 @@ const openMoreTaskModal = (e) => {
   tasks.forEach((task) => {
     if (task.date === date.toLocaleDateString()) {
       task.tasks.forEach((task) => {
-        const newTask = document.createElement("div");
-        newTask.dataset.id = task.id;
-        newTask.classList.add("task");
-        newTask.classList.add(task.color);
-        newTask.textContent = task.title;
+        if (!task.holiday || (task.holiday === true && holidays === true)) {
+          const newTask = document.createElement("div");
+          newTask.dataset.id = task.id;
+          newTask.classList.add("task");
+          newTask.classList.add(task.color);
+          newTask.textContent = task.title;
 
-        modalTaskList.append(newTask);
+          modalTaskList.append(newTask);
+        }
       });
     }
   });
